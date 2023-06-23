@@ -32,7 +32,7 @@ public class StudentServiceTest {
 		studentRepo.save(saveIntoDb);
 		studentService.deleteStudent(saveIntoDb.getId());
 		List<Student> getAllStudentsFromDb=studentRepo.findAll();
-		assertEquals(getAllStudentsFromDb.size(),5);
+		assertEquals(5,getAllStudentsFromDb.size());
 		
 		
 	}
@@ -63,7 +63,7 @@ public class StudentServiceTest {
 		Optional<Student> s=studentRepo.findById(41);
 		Student std=s.get();
 		Student student=studentService.updateStudentById(41, "king");
-		 assertEquals(student.getDept(),"king");
+		 assertEquals("king",student.getDept());
 	}
 	@Test
 	void testgetAllStudents() {
@@ -81,7 +81,7 @@ public class StudentServiceTest {
 		std.setDept("king");
 		std.setName("komalnadh");
 		Student std1=studentService.updateStudent(std);
-		assertEquals(std1.getName(),"komalnadh");
+		assertEquals("komalnadh",std1.getName());
 	}
 	
 }
