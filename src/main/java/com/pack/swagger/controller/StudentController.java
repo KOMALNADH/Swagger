@@ -45,8 +45,10 @@ public class StudentController {
 	 * @return
 	 */
 	@GetMapping(value="/studentsList",produces="application/json")
-	public List<Student> allStudents(){
-		return studentService.getAllStudents();
+	public ResponseEntity<List<Student>> allStudents(){
+		List<Student> list=studentService.getAllStudents();
+		
+		return new ResponseEntity<>(list,HttpStatus.OK); 
 		
 	}
 //	/**
@@ -56,13 +58,14 @@ public class StudentController {
 //	 * @return
 //	 */
 	@PostMapping(value="/update/{id}",consumes="application/json")
-	public Student updateStudent(@PathVariable Integer id,@RequestBody Student student) {
+	public ResponseEntity<Student> updateStudent(@PathVariable Integer id,@RequestBody Student student) {
 		
 			Student s=studentService.findByStudentId(id);
 			s.setDept(student.getDept());
 			s.setName(student.getName());
 			s.setPhone_No(student.getPhone_No());
-			return studentService.updateStudent(s);
+			Student stud=studentService.updateStudent(s);
+			return new ResponseEntity<>(stud,HttpStatus.CREATED);
 			
 			
 		
@@ -102,8 +105,9 @@ public class StudentController {
 	 */
 	
 	@GetMapping("/findbyname/{name}")
-	public Student findByName(@PathVariable String name) {
-		return studentService.findByStudentName(name);
+	public ResponseEntity<Student> findByName(@PathVariable String name) {
+		Student student= studentService.findByStudentName(name);
+		return new ResponseEntity<>(student,HttpStatus.OK);
 	}
 	/**
 	 * 
@@ -112,20 +116,22 @@ public class StudentController {
 	 * @return
 	 */
 	@PutMapping(value="/studentId/{Id}/dept/{newdept}",produces="application/json")
-    public Student updateDepartment(@PathVariable("Id")Integer Id,@PathVariable("newdept")String newdept){
-			Student s=studentService.findByStudentId(Id);
-			Student std=studentService.updateStudentById(Id,newdept);
-                   return std;
+    public ResponseEntity<Student> updateDepartment(@PathVariable("Id")Integer id,@PathVariable("newdept")String newdept){
+//			Student s=studentService.findByStudentId(Id);
+			Student std=studentService.updateStudentById(id,newdept);
+                   return new ResponseEntity<>(std,HttpStatus.OK);
 
     }
 	@GetMapping(value="/studentCount",produces="application/json")
-	public List<CountForDept> student(){
-		return studentService.getStudentCount();
+	public ResponseEntity<List<CountForDept>> student(){
+		List<CountForDept> list=studentService.getStudentCount();
+		return new ResponseEntity<>(list,HttpStatus.OK);
 		
 	}
 	@GetMapping(value="/studentAndId",produces="application/json")
-	public List<StudentIdName> studentWithId(){
-		return studentService.getStudentWithId();
+	public ResponseEntity<List<StudentIdName>> studentWithId(){
+		List<StudentIdName> list=studentService.getStudentWithId();
+		return new ResponseEntity<>(list,HttpStatus.OK);
 	}
 
 }
