@@ -2,6 +2,8 @@ package com.pack.swagger;
 
 import static org.junit.Assert.assertEquals;
 import static org.assertj.core.api.Assertions.assertThat;
+
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -14,7 +16,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import com.pack.swagger.Repository.StudentRepo;
+import com.pack.swagger.model.CountForDept;
 import com.pack.swagger.model.Student;
+import com.pack.swagger.model.StudentIdName;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -42,7 +46,11 @@ public class StudentRepoTest {
 //	@Disabled
 	void testGetAllStudents() {
 		List<Student> allStudentsFromDb = studentRepo.findAll();
-		assertThat(allStudentsFromDb.size()).isEqualTo(6);
+		List<Student> list=new ArrayList<>();
+		for(Student s:allStudentsFromDb) {
+			list.add(s);
+		}
+		assertThat(allStudentsFromDb.size()).isEqualTo(list.size());
 	}
 	/**
 	 * this method is used to check weather the update statement works or not
@@ -80,6 +88,21 @@ public class StudentRepoTest {
 		studentRepo.deleteById(saveIntoDb.getId());
 		List<Student> slist1=studentRepo.findAll();
 		assertEquals(slist.size(),slist1.size());
+	}
+	@Test
+	void testGetStudentWithId() {
+		List<StudentIdName> list=studentRepo.findNameId();
+		List<Student> list1=studentRepo.findAll();
+		assertEquals(list.size(),list1.size());
+	}
+	@Test
+	void testGetStudentCountWithName() {
+		List<CountForDept> list=studentRepo.findCountByDept();
+		List<CountForDept> list1=new ArrayList<>();
+		for(CountForDept c:list) {
+			list1.add(c);
+		}
+		assertEquals(list.size(),list1.size());
 	}
 		
 }

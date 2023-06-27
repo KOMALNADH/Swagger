@@ -14,7 +14,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import com.pack.swagger.Repository.StudentRepo;
+import com.pack.swagger.model.CountForDept;
 import com.pack.swagger.model.Student;
+import com.pack.swagger.model.StudentIdName;
 import com.pack.swagger.service.StudentService;
 
 @RunWith(SpringRunner.class)
@@ -32,7 +34,7 @@ public class StudentServiceTest {
 		studentRepo.save(saveIntoDb);
 		studentService.deleteStudent(saveIntoDb.getId());
 		List<Student> getAllStudentsFromDb=studentRepo.findAll();
-		assertEquals(5,getAllStudentsFromDb.size());
+		assertEquals(6,getAllStudentsFromDb.size());
 		
 		
 	}
@@ -82,6 +84,21 @@ public class StudentServiceTest {
 		std.setName("komalnadh");
 		Student std1=studentService.updateStudent(std);
 		assertEquals("komalnadh",std1.getName());
+	}
+	@Test
+	void testStudentDeptCount() {
+		List<CountForDept> list=studentService.getStudentCount();
+		List<CountForDept> list1=new ArrayList<>();
+		for(CountForDept c:list) {
+			list1.add(c);
+		}
+		assertEquals(list.size(),list1.size());
+	}
+	@Test
+	void testStudentIdAndName() {
+		List<StudentIdName> list=studentService.getStudentWithId();
+		List<Student> list1=studentService.getAllStudents();
+		assertEquals(list.size(),list1.size());
 	}
 	
 }

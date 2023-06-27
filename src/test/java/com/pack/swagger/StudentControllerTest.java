@@ -46,7 +46,9 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pack.swagger.Repository.StudentRepo;
+import com.pack.swagger.model.CountForDept;
 import com.pack.swagger.model.Student;
+import com.pack.swagger.model.StudentIdName;
 import com.pack.swagger.service.StudentServiceImpl;
 
 @RunWith(SpringRunner.class)
@@ -106,7 +108,7 @@ public class StudentControllerTest {
 		Integer id=1;
 		Student s=new Student(id,"komal","cse",8775l);
 		when(studentRepo.findById(id)).thenReturn(Optional.of(s));
-		mockMvc.perform(delete("/student/delete/{id}",id))
+		mockMvc.perform(delete("/student/delete/{id}",1))
 		       .andExpect(status().isOk());
 		verify(studentImpl,times(1)).deleteStudent(id);
 				
@@ -160,6 +162,40 @@ public class StudentControllerTest {
 		String res = result.getResponse().getContentAsString();
 		Student std = new ObjectMapper().readValue(res, Student.class);
 		assertEquals(s.getDept(),std.getDept());
+	}
+	@Test
+	void testStudentCountWithDept() throws Exception {
+		List<Student> slist = new ArrayList<>();
+		slist.add(new Student(1, "komal", "cse", 8968587l));
+		slist.add(new Student(2, "luffy", "pirate", 8675l));
+		slist.add(new Student(3, "hygc", "pirate", 87567l));
+		List<CountForDept> list=new ArrayList<>();
+		list.add(new CountForDept(1,"cse"));
+		list.add(new CountForDept(2,"pirate"));
+		Mockito.when(studentRepo.saveAll(slist)).thenReturn(slist);
+		Mockito.when(studentImpl.getStudentCount()).thenReturn(list);
+		MvcResult result=mockMvc.perform(get("/student/studentCount")).andReturn();
+		String res = result.getResponse().getContentAsString();
+		List<CountForDept> s = Arrays.asList(mapper.readValue(res, CountForDept[].class));
+		assertEquals(list.get(0).getCount(), s.get(0).getCount());
+		
+	}
+	@Test
+	void testStudentIdWithName() throws Exception {
+		List<Student> slist = new ArrayList<>();
+		slist.add(new Student(1, "komal", "cse", 8968587l));
+		slist.add(new Student(2, "luffy", "pirate", 8675l));
+		slist.add(new Student(3, "hygc", "pirate", 87567l));
+		List<StudentIdName> list=new ArrayList<>();
+		list.add(new StudentIdName(1,"komal"));
+		list.add(new StudentIdName(1,"luffy"));
+		list.add(new StudentIdName(1,"hygc"));
+		Mockito.when(studentRepo.saveAll(slist)).thenReturn(slist);
+		Mockito.when(studentImpl.getStudentWithId()).thenReturn(list);
+		MvcResult result=mockMvc.perform(get("/student/studentAndId")).andReturn();
+		String res = result.getResponse().getContentAsString();
+		List<StudentIdName> s = Arrays.asList(mapper.readValue(res, StudentIdName[].class));
+		assertEquals(list.get(0).getId(),s.get(0).getId());
 	}
 
 }

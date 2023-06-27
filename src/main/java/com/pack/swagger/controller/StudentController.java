@@ -4,6 +4,8 @@ import java.util.List;
 
 import org.apache.juli.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -13,7 +15,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.pack.swagger.model.CountForDept;
 import com.pack.swagger.model.Student;
+import com.pack.swagger.model.StudentIdName;
 import com.pack.swagger.service.StudentService;
 
 
@@ -30,9 +34,11 @@ public class StudentController {
 	 * @return
 	 */
 	@PostMapping(value="/insertStudent", consumes="application/json")
-	public Student insertStudent(@RequestBody Student student) {
+	public ResponseEntity<Student> insertStudent(@RequestBody Student student) {
 		logger.info("inserting student");
-		return studentService.InsertMovie(student);
+		Student std= studentService.InsertMovie(student);
+			return new ResponseEntity<>(std,HttpStatus.CREATED);
+		
 	}
 	/**
 	 * 
@@ -69,8 +75,11 @@ public class StudentController {
 //	 * @param student
 //	 */
 	@DeleteMapping(value="/delete/{id}")
-	public void deleteStudent(@PathVariable Integer id) {
+	public ResponseEntity<HttpStatus> deleteStudent(@PathVariable Integer id) {
 		 studentService.deleteStudent(id);
+		 return new ResponseEntity<>(HttpStatus.OK);
+		
+		
 		
 	}
 	/**
@@ -79,17 +88,29 @@ public class StudentController {
 	 * @return
 	 */
 	@GetMapping("/findbyid/{id}")
-	public Student findById(@PathVariable Integer id) {
-		return studentService.findByStudentId(id);
+	public ResponseEntity<Student> findById(@PathVariable Integer id) {
+		Student student=studentService.findByStudentId(id);
+		
+			return new ResponseEntity<>(student,HttpStatus.OK);
+				
 		
 	}
 	/**
+	 * 
+	 * @param name
+	 * @return
 	 */
+	
 	@GetMapping("/findbyname/{name}")
 	public Student findByName(@PathVariable String name) {
 		return studentService.findByStudentName(name);
 	}
-	
+	/**
+	 * 
+	 * @param Id
+	 * @param newdept
+	 * @return
+	 */
 	@PutMapping(value="/studentId/{Id}/dept/{newdept}",produces="application/json")
     public Student updateDepartment(@PathVariable("Id")Integer Id,@PathVariable("newdept")String newdept){
 			Student s=studentService.findByStudentId(Id);
@@ -97,6 +118,14 @@ public class StudentController {
                    return std;
 
     }
-	
+	@GetMapping(value="/studentCount",produces="application/json")
+	public List<CountForDept> student(){
+		return studentService.getStudentCount();
+		
+	}
+	@GetMapping(value="/studentAndId",produces="application/json")
+	public List<StudentIdName> studentWithId(){
+		return studentService.getStudentWithId();
+	}
 
 }
