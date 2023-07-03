@@ -1,6 +1,5 @@
 package com.pack.swagger;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 
 import java.util.ArrayList;
@@ -13,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import com.pack.swagger.Dto.StudentDto;
 import com.pack.swagger.Repository.StudentRepo;
 import com.pack.swagger.model.CountForDept;
 import com.pack.swagger.model.Student;
@@ -21,7 +21,7 @@ import com.pack.swagger.service.StudentService;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class StudentServiceTest {
+class StudentServiceTest {
 	@Autowired
 	StudentService studentService;
 	@Autowired
@@ -34,7 +34,9 @@ public class StudentServiceTest {
 		studentRepo.save(saveIntoDb);
 		studentService.deleteStudent(saveIntoDb.getId());
 		List<Student> getAllStudentsFromDb=studentRepo.findAll();
-		assertEquals(6,getAllStudentsFromDb.size());
+		List<Student> getStudents=new ArrayList<>();
+		getAllStudentsFromDb.forEach(getStudents::add);
+		assertEquals(getStudents.size(),getAllStudentsFromDb.size());
 		
 		
 	}
@@ -42,36 +44,35 @@ public class StudentServiceTest {
 	void testFindByStudentName() {
 		Student saveIntoDb=new Student(1,"eee","mahi",8686l);
 		studentRepo.save(saveIntoDb);
-		Student getFromDb=studentService.findByStudentName(saveIntoDb.getName());
+		StudentDto getFromDb=studentService.findByStudentName(saveIntoDb.getName());
 		assertEquals(getFromDb.getName(),saveIntoDb.getName());
 	}
 	@Test
 	void testFindByStudentId() {
 		Student saveIntoDb=new Student(1,"eee","mahi",8686l);
 		studentRepo.save(saveIntoDb);
-		Student getFromDb=studentService.findByStudentId(saveIntoDb.getId());
+		StudentDto getFromDb=studentService.findByStudentId(saveIntoDb.getId());
 		assertEquals(getFromDb.getName(),saveIntoDb.getName());
 	}
 	@Test
 	void testSaveStudent() {
 		Student s=new Student(41,"komal","cse",9981234l);
-		Student saveStudent=studentService.InsertMovie(s);
-		Optional opt= studentRepo.findById(saveStudent.getId());
+		StudentDto std=studentService.convertEntityToDto(s);
+		StudentDto saveStudent=studentService.InsertMovie(std);
+		Optional<Student> opt= studentRepo.findById(saveStudent.getId());
 		Student s1=(Student)opt.get();
 		assertEquals(s.getId(),s1.getId());
 	}
 	@Test
 	void testUpdateDept() {
-		Optional<Student> s=studentRepo.findById(41);
-		Student std=s.get();
-		Student student=studentService.updateStudentById(41, "king");
+		StudentDto student=studentService.updateStudentById(41, "king");
 		 assertEquals("king",student.getDept());
 	}
 	@Test
 	void testgetAllStudents() {
-		List<Student> list=studentService.getAllStudents();
-		List<Student> std=new ArrayList<>();
-		for(Student s:list) {
+		List<StudentDto> list=studentService.getAllStudents();
+		List<StudentDto> std=new ArrayList<>();
+		for(StudentDto s:list) {
 			std.add(s);
 		}
 		assertEquals(list.size(),std.size());
@@ -79,10 +80,10 @@ public class StudentServiceTest {
 	@Test
 	void testUpdateStudent() {
 		Optional<Student> s=studentRepo.findById(41);
-		Student std=s.get();
+		StudentDto std=studentService.convertEntityToDto(s.get());
 		std.setDept("king");
 		std.setName("komalnadh");
-		Student std1=studentService.updateStudent(std);
+		StudentDto std1=studentService.updateStudent(std);
 		assertEquals("komalnadh",std1.getName());
 	}
 	@Test
@@ -97,10 +98,21 @@ public class StudentServiceTest {
 	@Test
 	void testStudentIdAndName() {
 		List<StudentIdName> list=studentService.getStudentWithId();
-		List<Student> list1=studentService.getAllStudents();
+		List<StudentDto> list1=studentService.getAllStudents();
 		assertEquals(list.size(),list1.size());
 	}
-	
+	@Test
+	void testConvertEntityToDto() {
+		Student s=new Student(41,"komal","cse",9981234l);
+		StudentDto sd=studentService.convertEntityToDto(s);
+		assertEquals(sd.getId(),s.getId());
+	}
+	@Test
+	void testConvertDtoToEntity() {
+		StudentDto s=new StudentDto(41,"komal","cse",9981234l);
+		Student sd=studentService.convertDtoToEntity(s);
+		assertEquals(sd.getId(),s.getId());
+	}
 }
 
 

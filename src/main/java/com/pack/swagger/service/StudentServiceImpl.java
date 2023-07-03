@@ -2,10 +2,12 @@ package com.pack.swagger.service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.pack.swagger.Dto.StudentDto;
 import com.pack.swagger.Repository.StudentRepo;
 import com.pack.swagger.model.CountForDept;
 import com.pack.swagger.model.Student;
@@ -15,24 +17,45 @@ public class StudentServiceImpl implements StudentService{
 
 	@Autowired
 	StudentRepo studentRepo;
+	
+	public StudentDto convertEntityToDto(Student student) {
+		StudentDto studentDto=new StudentDto();
+		studentDto.setId(student.getId());
+		studentDto.setName(student.getName());
+		studentDto.setDept(student.getDept());
+		studentDto.setPhoneNo(student.getPhone_No());
+		return studentDto;
+	}
+	public Student convertDtoToEntity(StudentDto studentDto) {
+		Student student=new Student();
+		student.setId(studentDto.getId());
+		student.setName(studentDto.getName());
+		student.setDept(studentDto.getDept());
+		student.setPhone_No(studentDto.getPhoneNo());
+		return student;
+	}
+	
 	@Override
-	public Student InsertMovie(Student student) {
-		return studentRepo.save(student);
+	public StudentDto InsertMovie(StudentDto s) {
+		return convertEntityToDto(studentRepo.save(convertDtoToEntity(s)));
 		
 	}
 	@Override
-	public List<Student> getAllStudents() {
+	public List<StudentDto> getAllStudents() {
 		
-		return studentRepo.findAll();
+		return studentRepo.findAll()
+						  .stream().map(this::convertEntityToDto)
+						  .collect(Collectors.toList());
+						  
 	}
 	@Override
-	public Student findByStudentId(Integer id) {
+	public StudentDto findByStudentId(Integer id) {
 		Optional<Student> s=studentRepo.findById(id);
 		Student std=null;
 		if(s.isPresent()) {
 		std= s.get() ;
 		}
-		return std;
+		return convertEntityToDto(std);
 		
 		
 	}
@@ -41,17 +64,17 @@ public class StudentServiceImpl implements StudentService{
 		 studentRepo.deleteById(id);
 	}
 	@Override
-	public Student findByStudentName(String name) {
-	
-		return studentRepo.findByName(name);
-	}
-	@Override
-	public Student updateStudent(Student student) {
+	public StudentDto findByStudentName(String name) {
 		
-		return studentRepo.save(student);
+		return convertEntityToDto(studentRepo.findByName(name));
 	}
 	@Override
-	public Student updateStudentById(Integer id, String dept) {
+	public StudentDto updateStudent(StudentDto student) {
+		Student s=studentRepo.save(convertDtoToEntity(student));
+		return convertEntityToDto(s);
+	}
+	@Override
+	public StudentDto updateStudentById(Integer id, String dept) {
 		Optional<Student> s=studentRepo.findById(id);
 		Student std=null;
 		if(s.isPresent()) {
@@ -60,7 +83,7 @@ public class StudentServiceImpl implements StudentService{
 			studentRepo.save(std);
 			}
 		
-		return std;
+		return convertEntityToDto(std);
 	}
 	@Override
 	public List<CountForDept> getStudentCount() {

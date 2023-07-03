@@ -7,8 +7,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import org.junit.Ignore;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +20,7 @@ import com.pack.swagger.model.StudentIdName;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class StudentRepoTest {
+class StudentRepoTest {
 	@Autowired
 	StudentRepo studentRepo;
 	
@@ -35,7 +33,7 @@ public class StudentRepoTest {
 		
 		Student s=new Student(41,"komal","cse",9981234l);
 		Student saveStudent=studentRepo.save(s);
-		Optional opt= studentRepo.findById(saveStudent.getId());
+		Optional<Student> opt= studentRepo.findById(saveStudent.getId());
 		Student s1=(Student)opt.get();
 		assertEquals(s.getId(),s1.getId());
 	}
@@ -50,7 +48,7 @@ public class StudentRepoTest {
 		for(Student s:allStudentsFromDb) {
 			list.add(s);
 		}
-		assertThat(allStudentsFromDb.size()).isEqualTo(list.size());
+		assertEquals(allStudentsFromDb.size(),list.size());
 	}
 	/**
 	 * this method is used to check weather the update statement works or not

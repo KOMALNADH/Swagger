@@ -15,8 +15,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.pack.swagger.Dto.StudentDto;
 import com.pack.swagger.model.CountForDept;
-import com.pack.swagger.model.Student;
 import com.pack.swagger.model.StudentIdName;
 import com.pack.swagger.service.StudentService;
 
@@ -27,16 +27,16 @@ import com.pack.swagger.service.StudentService;
 public class StudentController {
 	@Autowired
 	StudentService studentService;
-	protected final static org.apache.juli.logging.Log logger=LogFactory.getLog(StudentController.class);
+	protected static final  org.apache.juli.logging.Log logger=LogFactory.getLog(StudentController.class);
 	/**
 	 * 
-	 * @param student
-	 * @return
+	 * @param student used to send data from controller to swagger
+	 * @return student and status is created
 	 */
 	@PostMapping(value="/insertStudent", consumes="application/json")
-	public ResponseEntity<Student> insertStudent(@RequestBody Student student) {
+	public ResponseEntity<StudentDto> insertStudent(@RequestBody StudentDto student) {
 		logger.info("inserting student");
-		Student std= studentService.InsertMovie(student);
+		StudentDto std= studentService.InsertMovie(student);
 			return new ResponseEntity<>(std,HttpStatus.CREATED);
 		
 	}
@@ -45,8 +45,8 @@ public class StudentController {
 	 * @return
 	 */
 	@GetMapping(value="/studentsList",produces="application/json")
-	public ResponseEntity<List<Student>> allStudents(){
-		List<Student> list=studentService.getAllStudents();
+	public ResponseEntity<List<StudentDto>> allStudents(){
+		List<StudentDto> list=studentService.getAllStudents();
 		
 		return new ResponseEntity<>(list,HttpStatus.OK); 
 		
@@ -58,13 +58,13 @@ public class StudentController {
 //	 * @return
 //	 */
 	@PostMapping(value="/update/{id}",consumes="application/json")
-	public ResponseEntity<Student> updateStudent(@PathVariable Integer id,@RequestBody Student student) {
+	public ResponseEntity<StudentDto> updateStudent(@PathVariable Integer id,@RequestBody StudentDto student) {
 		
-			Student s=studentService.findByStudentId(id);
+			StudentDto s=studentService.findByStudentId(id);
 			s.setDept(student.getDept());
 			s.setName(student.getName());
-			s.setPhone_No(student.getPhone_No());
-			Student stud=studentService.updateStudent(s);
+			s.setPhoneNo(student.getPhoneNo());
+			StudentDto stud=studentService.updateStudent(s);
 			return new ResponseEntity<>(stud,HttpStatus.CREATED);
 			
 			
@@ -91,8 +91,8 @@ public class StudentController {
 	 * @return
 	 */
 	@GetMapping("/findbyid/{id}")
-	public ResponseEntity<Student> findById(@PathVariable Integer id) {
-		Student student=studentService.findByStudentId(id);
+	public ResponseEntity<StudentDto> findById(@PathVariable Integer id) {
+		StudentDto student=studentService.findByStudentId(id);
 		
 			return new ResponseEntity<>(student,HttpStatus.OK);
 				
@@ -105,8 +105,8 @@ public class StudentController {
 	 */
 	
 	@GetMapping("/findbyname/{name}")
-	public ResponseEntity<Student> findByName(@PathVariable String name) {
-		Student student= studentService.findByStudentName(name);
+	public ResponseEntity<StudentDto> findByName(@PathVariable String name) {
+		StudentDto student= studentService.findByStudentName(name);
 		return new ResponseEntity<>(student,HttpStatus.OK);
 	}
 	/**
@@ -116,9 +116,8 @@ public class StudentController {
 	 * @return
 	 */
 	@PutMapping(value="/studentId/{Id}/dept/{newdept}",produces="application/json")
-    public ResponseEntity<Student> updateDepartment(@PathVariable("Id")Integer id,@PathVariable("newdept")String newdept){
-//			Student s=studentService.findByStudentId(Id);
-			Student std=studentService.updateStudentById(id,newdept);
+    public ResponseEntity<StudentDto> updateDepartment(@PathVariable("Id")Integer id,@PathVariable("newdept")String newdept){
+			StudentDto std=studentService.updateStudentById(id,newdept);
                    return new ResponseEntity<>(std,HttpStatus.OK);
 
     }

@@ -1,13 +1,10 @@
 package com.pack.swagger;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -19,7 +16,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Arrays;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 
@@ -40,11 +36,8 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
 import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.test.web.servlet.RequestBuilder;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.pack.swagger.Dto.StudentDto;
 import com.pack.swagger.Repository.StudentRepo;
 import com.pack.swagger.model.CountForDept;
 import com.pack.swagger.model.Student;
@@ -53,7 +46,7 @@ import com.pack.swagger.service.StudentServiceImpl;
 
 @RunWith(SpringRunner.class)
 @WebMvcTest
-public class StudentControllerTest {
+class StudentControllerTest {
 
 	@Autowired
 	MockMvc mockMvc;
@@ -66,41 +59,41 @@ public class StudentControllerTest {
 
 	@Test
 	void testinsertStudent() throws Exception {
-		Student s = new Student(13, "luffy", "pirate", 7036289111L);
-		Mockito.when(studentRepo.save(s)).thenReturn(s);
-		Mockito.when(studentImpl.InsertMovie(ArgumentMatchers.any())).thenReturn(s);
-		String studentJson = mapper.writeValueAsString(s);// convert student to string
+		StudentDto sd=new StudentDto(10, "luffy", "pirate", 8678554l);
+//		Mockito.when(studentRepo.save(s)).thenReturn(s);
+		Mockito.when(studentImpl.InsertMovie(ArgumentMatchers.any())).thenReturn(sd);
+		String studentJson = mapper.writeValueAsString(sd);// convert student to string
 		MvcResult result = mockMvc
 				.perform(post("/student/insertStudent").contentType(MediaType.APPLICATION_JSON)
 						.characterEncoding("utf-8").content(studentJson).accept(MediaType.APPLICATION_JSON))
 				.andReturn();
 		String res = result.getResponse().getContentAsString(); // convert response to string
-		Student std = new ObjectMapper().readValue(res, Student.class);
-		assertEquals((Integer) 13, std.getId());
+		StudentDto std = new ObjectMapper().readValue(res, StudentDto.class);
+		assertEquals((Integer) 10, std.getId());
 	}
 
 	@Test
 	void testgetAllStudents() throws Exception {
-		List<Student> slist = new ArrayList<>();
-		slist.add(new Student(1, "komal", "cse", 8968587l));
-		slist.add(new Student(2, "luffy", "pirate", 8675l));
-		slist.add(new Student(3, "hygc", "gcf", 87567l));
+		List<StudentDto> slist = new ArrayList<>();
+		slist.add(new StudentDto(1, "komal", "cse", 8968587l));
+		slist.add(new StudentDto(2, "luffy", "pirate", 8675l));
+		slist.add(new StudentDto(3, "hygc", "gcf", 87567l));
 		// Mockito.when(studentRepo.findAll()).thenReturn(slist);
 		Mockito.when(studentImpl.getAllStudents()).thenReturn(slist);
 		MvcResult result = mockMvc.perform(get("/student/studentsList")).andReturn();
 		String res = result.getResponse().getContentAsString();
-		List<Student> s = Arrays.asList(mapper.readValue(res, Student[].class));
+		List<StudentDto> s = Arrays.asList(mapper.readValue(res, StudentDto[].class));
 		assertEquals(slist.size(), s.size());
 	}
 
 	@Test
 	void testgetStudentById() throws Exception {
-		Student s = new Student(10, "komal", "cse", 876576l);
-		Mockito.when(studentImpl.findByStudentId(10)).thenReturn(s);
+		StudentDto sd=new StudentDto(10, "luffy", "pirate", 8678554l);
+		Mockito.when(studentImpl.findByStudentId(10)).thenReturn(sd);
 		MvcResult result = mockMvc.perform(get("/student/findbyid/10")).andReturn();
 		String res = result.getResponse().getContentAsString();
-		Student std = new ObjectMapper().readValue(res, Student.class);
-		assertEquals(std.getId(), (Integer) 10);
+		StudentDto std = new ObjectMapper().readValue(res, StudentDto.class);
+		assertEquals("luffy",std.getName());
 	}
 
 	@Test
@@ -118,15 +111,17 @@ public class StudentControllerTest {
 	@Test
 	void testfindByName() throws Exception {
 		Student s = new Student(10, "luffy", "pirate", 8678554l);
-		Mockito.when(studentImpl.findByStudentName("luffy")).thenReturn(s);
+		StudentDto sd=new StudentDto(10, "luffy", "pirate", 8678554l);
+		System.out.println(sd);
+		Mockito.when(studentImpl.findByStudentName("luffy")).thenReturn(sd);
 		MvcResult result = mockMvc.perform(get("/student/findbyname/luffy")).andReturn();
 		String res = result.getResponse().getContentAsString();
-		Student std = new ObjectMapper().readValue(res, Student.class);
+		StudentDto std = new ObjectMapper().readValue(res, StudentDto.class);
 		assertEquals(s.getId(), std.getId());
 	}
 	@Test
 	void testUpdatDept() throws Exception {
-		Student s=new Student(10, "luffy", "pirate", 8678554l);
+		StudentDto s=new StudentDto(10, "luffy", "pirate", 8678554l);
 		Mockito.when(studentImpl.InsertMovie(s)).thenReturn(s);
 		 Mockito.when(studentImpl.findByStudentId(Mockito.anyInt())).thenReturn(s);//		MvcResult result = mockMvc.perform(put("/student/studentId/10/dept/mech")).andReturn();
 //		String res = result.getResponse().getContentAsString();
@@ -142,26 +137,26 @@ public class StudentControllerTest {
  				.andReturn();
 
          String res = result.getResponse().getContentAsString();
- 		Student std = new ObjectMapper().readValue(res, Student.class);
+ 		StudentDto student = new ObjectMapper().readValue(res, StudentDto.class);
 //         assertThat(outputInJson).isEqualTo(expectedJson);
- 		assertEquals(s.getId(),std.getId());
+ 		assertEquals(s.getDept(),student.getDept());
 		
 	}
 	@Test
 	void testUpdateStudent() throws Exception {
-		Student s=new Student(10, "luffy", "pirate", 8678554l);
-		Mockito.when(studentImpl.InsertMovie(s)).thenReturn(s);
-		Mockito.when(studentImpl.findByStudentId(ArgumentMatchers.any())).thenReturn(s);
-		Mockito.when(studentImpl.updateStudent(s)).thenReturn(s);
-		String expectedJson = mapper.writeValueAsString(s);
+		StudentDto sd=new StudentDto(10, "luffy", "pirate", 8678554l);
+		Mockito.when(studentImpl.InsertMovie(sd)).thenReturn(sd);
+		Mockito.when(studentImpl.findByStudentId(ArgumentMatchers.any())).thenReturn(sd);
+		Mockito.when(studentImpl.updateStudent(sd)).thenReturn(sd);
+		String expectedJson = mapper.writeValueAsString(sd);
 		System.out.println(expectedJson);
 		MvcResult result =  mockMvc
  				.perform(post("/student/update/10").contentType(MediaType.APPLICATION_JSON)
  						.characterEncoding("utf-8").content(expectedJson).accept(MediaType.APPLICATION_JSON))
  				.andReturn();
 		String res = result.getResponse().getContentAsString();
-		Student std = new ObjectMapper().readValue(res, Student.class);
-		assertEquals(s.getDept(),std.getDept());
+		StudentDto std = new ObjectMapper().readValue(res, StudentDto.class);
+		assertEquals(sd.getDept(),std.getDept());
 	}
 	@Test
 	void testStudentCountWithDept() throws Exception {
